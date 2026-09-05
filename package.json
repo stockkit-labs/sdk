@@ -1,0 +1,43 @@
+{
+  "name": "@stockkit/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript client for the StockKit API: tokenized stocks on Robinhood Chain.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "sideEffects": false,
+  "license": "MIT",
+  "author": "StockKit Labs",
+  "homepage": "https://stockkit.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stockkit-labs/sdk.git"
+  },
+  "bugs": "https://github.com/stockkit-labs/sdk/issues",
+  "keywords": [
+    "stockkit",
+    "robinhood-chain",
+    "tokenized-stocks",
+    "rwa",
+    "defi",
+    "trading",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
