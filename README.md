@@ -1,3 +1,5 @@
+![StockKit SDK](https://raw.githubusercontent.com/stockkit-labs/sdk/main/.github/banner.png)
+
 # @stockkit/sdk
 
 TypeScript client for the [StockKit API](https://api.stockkit.dev): tokenized stocks on [Robinhood Chain](https://robinhoodchain.blockscout.com).
