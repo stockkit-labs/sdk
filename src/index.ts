@@ -61,6 +61,46 @@ export type Quote = {
   asOf: string;
 };
 
+export type ResearchFact = {
+  value: number;
+  unit: string;
+  periodStart: string | null;
+  periodEnd: string;
+  fiscalYear: number | null;
+  form: string | null;
+};
+
+export type Research = {
+  symbol: string;
+  underlying: {
+    ticker: string;
+    companyName: string;
+    cik: string;
+    exchange: string | null;
+    industry: string | null;
+    sic: string | null;
+    stateOfIncorporation: string | null;
+    fiscalYearEnd: string | null;
+    isin: string;
+  } | null;
+  facts: {
+    revenue: ResearchFact | null;
+    netIncome: ResearchFact | null;
+    sharesOutstanding: { value: number; unit: string; asOf: string } | null;
+    marketCap: { value: number; unit: string; basis: string } | null;
+  };
+  token: Asset & {
+    price: {
+      underlyingMid: string;
+      tokenMid: string;
+      currency: string;
+      asOf: string;
+    } | null;
+  };
+  sources: string[];
+  note: string | null;
+};
+
 export type TransactionStep = {
   description: string;
   to: string;
@@ -143,6 +183,10 @@ export class StockKit {
 
   prices = {
     get: (symbol: string) => this.request<Price>(`/v1/prices/${encodeURIComponent(symbol)}`),
+  };
+
+  research = {
+    get: (symbol: string) => this.request<Research>(`/v1/research/${encodeURIComponent(symbol)}`),
   };
 
   portfolio = {

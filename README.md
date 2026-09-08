@@ -61,6 +61,7 @@ for (const step of tx.steps) {
 | `assets.list()` | `GET /v1/assets` |
 | `assets.get(symbol)` | `GET /v1/assets/:symbol` |
 | `prices.get(symbol)` | `GET /v1/prices/:symbol` |
+| `research.get(symbol)` | `GET /v1/research/:symbol` |
 | `portfolio.get(address)` | `GET /v1/portfolio/:address` |
 | `corporateActions.list()` | `GET /v1/corporate-actions` |
 | `trade.quote(params)` | `GET /v1/quote` |
