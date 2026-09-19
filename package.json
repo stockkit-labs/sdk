@@ -1,6 +1,6 @@
 {
   "name": "@stockkit/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TypeScript client for the StockKit API: tokenized stocks on Robinhood Chain.",
   "type": "module",
   "main": "./dist/index.js",

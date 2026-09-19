@@ -4,7 +4,7 @@
 
 TypeScript client for the [StockKit API](https://api.stockkit.dev): tokenized stocks on [Robinhood Chain](https://robinhoodchain.blockscout.com).
 
-StockKit gives developers one layer for discovering tokenized assets, reading live prices, valuing portfolios, getting executable DEX quotes, and building trades. It is non-custodial: the API returns unsigned transactions, and you sign with your own wallet. StockKit never holds keys and never executes trades.
+StockKit gives developers one layer for discovering tokenized assets, reading live prices and price history, valuing portfolios, getting executable DEX quotes, building trades, and setting webhook price alerts. It is non-custodial: the API returns unsigned transactions, and you sign with your own wallet. StockKit never holds keys and never executes trades.
 
 Docs: https://docs.stockkit.dev
 
@@ -40,6 +40,20 @@ const tx = await stockkit.trade.build({
   recipient: "0xYourWalletAddress",
   slippageBps: 50,
 })
+
+// OHLC candles from the onchain pool price (5m, 15m, 1h, 4h, 1d)
+const { candles } = await stockkit.history.get("NVDA", { interval: "1h", limit: 24 })
+
+// Supply, pool TVL, DEX premium vs the equity quote, 24h change
+const stats = await stockkit.stats.get("NVDA")
+
+// One-shot price alert delivered to your webhook
+const alert = await stockkit.alerts.create({
+  ticker: "NVDA",
+  condition: "above",
+  price: 250,
+  webhookUrl: "https://example.com/hooks/stockkit",
+})
 ```
 
 Signing and submitting the built steps is up to you, for example with viem:
@@ -66,8 +80,44 @@ for (const step of tx.steps) {
 | `corporateActions.list()` | `GET /v1/corporate-actions` |
 | `trade.quote(params)` | `GET /v1/quote` |
 | `trade.build(params)` | `POST /v1/trade/build` |
+| `history.get(symbol, { interval, limit })` | `GET /v1/history/:symbol` |
+| `stats.get(symbol)` | `GET /v1/stats/:symbol` |
+| `alerts.create(params)` | `POST /v1/alerts` |
+| `alerts.get(id, secret)` | `GET /v1/alerts/:id` |
+| `alerts.delete(id, secret)` | `DELETE /v1/alerts/:id` |
+| `votes.list()` | `GET /v1/votes` |
+| `votes.power(address, symbol?)` | `GET /v1/votes/power/:address` |
+| `markets.list({ limit, offset, graduated })` | `GET /v1/markets` |
+| `earn.overview()` | `GET /v1/earn` |
+| `earn.status(address)` | `GET /v1/earn/status/:address` |
+| `earn.claim({ address, epoch, signature })` | `POST /v1/earn/claim` |
 
 All responses are fully typed. Errors throw `StockKitError` with `status` and `code`.
+
+## Alerts
+
+`alerts.create` returns a `secret` exactly once. Store it: it is the only way
+to read or delete the alert. Alerts are evaluated every 5 minutes against the
+onchain DEX price, fire once, and expire after 30 days.
+
+```ts
+const status = await stockkit.alerts.get(alert.id, alert.secret)
+await stockkit.alerts.delete(alert.id, alert.secret)
+```
+
+## Earn
+
+`earn.claim` needs a `personal_sign` signature over the message returned by
+`earn.status`. The SDK never signs; use your own wallet:
+
+```ts
+const status = await stockkit.earn.status(account.address)
+
+if (status.epoch?.claimOpen && status.epoch.message) {
+  const signature = await walletClient.signMessage({ message: status.epoch.message })
+  await stockkit.earn.claim({ address: account.address, epoch: status.epoch.id, signature })
+}
+```
 
 ## Options
 
